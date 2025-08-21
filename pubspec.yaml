@@ -38,6 +38,7 @@ dependencies:
   flutter_dotenv: 
   http: 
   flutter_stripe:
+  google_mobile_ads: ^6.0.0
   
 
 dev_dependencies:

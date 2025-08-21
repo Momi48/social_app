@@ -4,11 +4,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:social_app/pages/settings_page.dart';
 import 'package:social_app/pages/wallet_page.dart';
 
 class OrdersPage extends StatefulWidget {
-   
-  const OrdersPage({super.key,});
+  const OrdersPage({super.key});
 
   @override
   State<OrdersPage> createState() => _OrdersPageState();
@@ -18,12 +18,14 @@ class _OrdersPageState extends State<OrdersPage> {
   final GlobalKey<FormState> paymentForm = GlobalKey<FormState>();
   final TextEditingController? paymentController = TextEditingController();
   Map<String, dynamic>? paymentIntentData;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
+        actions: [],
         title: Text('Payment'),
         centerTitle: true,
         elevation: 0,
@@ -90,11 +92,38 @@ class _OrdersPageState extends State<OrdersPage> {
                   ),
                   onPressed: () {
                     if (paymentForm.currentState!.validate()) {
-                      makePayment( paymentController!.text.toString(), 'USD');
+                      makePayment(paymentController!.text.toString(), 'USD');
                     }
                   },
                   child: Text(
                     'Make Payment',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: theme.primaryColor,
+                    elevation: 5,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Payment issue? Tap here to contact our helpline.',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -128,12 +157,11 @@ class _OrdersPageState extends State<OrdersPage> {
           applePay: PaymentSheetApplePay(merchantCountryCode: 'US'),
         ),
       );
-      
 
       displayPaymentSheet();
     } else {
       if (paymentIntentData == null) return;
-      
+
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           googlePay: PaymentSheetGooglePay(
@@ -145,7 +173,6 @@ class _OrdersPageState extends State<OrdersPage> {
           merchantDisplayName: 'Muzzammil',
         ),
       );
-    
 
       displayPaymentSheet();
     }
@@ -166,16 +193,7 @@ class _OrdersPageState extends State<OrdersPage> {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       );
-      
-   
-      if (response.statusCode >= 400) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Amount is too small. Amount should 100 or Greater '),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+
       return jsonDecode(response.body.toString());
     } catch (e) {
       debugPrint('Error $e');
@@ -184,27 +202,35 @@ class _OrdersPageState extends State<OrdersPage> {
 
   displayPaymentSheet() async {
     try {
-      await Stripe.instance.presentPaymentSheet();
+      await Stripe.instance.presentPaymentSheet(
+        options: PaymentSheetPresentOptions(),
+      );
       var paymentIntentId = paymentIntentData!['id'];
+
       print('Pay is $paymentIntentId');
       Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => WalletPage(
-      paymentAmount: paymentController!.text,
-      paymentid: paymentIntentId, 
-    ),
-  )
-).then((_) =>{
-  setState(() {
-    
-  })
-});
+        context,
+        MaterialPageRoute(
+          builder: (context) => WalletPage(
+            paymentAmount: paymentController!.text,
+            paymentid: paymentIntentId,
+          ),
+        ),
+      ).then((_) => {setState(() {})});
     } on StripeException catch (se) {
+      // Declined card: 4000 0000 0000 0002
+
+      // Insufficient funds: 4000 0000 0000 9995
+
+      // Expired card: 4000 0000 0000 0069
+
+      // Incorrect CVC: 4000 0000 0000 0127
+
+      // Processing error: 4000 0000 0000 0119
+
       debugPrint('Payment Failed ${se.toString()}');
     } catch (e) {
       debugPrint('Error ${e.toString()}');
     }
   }
-  
 }

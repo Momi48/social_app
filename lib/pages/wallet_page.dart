@@ -30,16 +30,21 @@ class _WalletPageState extends State<WalletPage> {
   @override
   Widget build(BuildContext context) {
      List<Map<String, dynamic>> transactions = [
-    //   {
-    //     'id': 1,
-    //     'title': 'Angga Big Park',
-    //     'amount': widget.paymentAmount ?? '0',
-    //   },
+      {
+        'id': 1,
+        'title': 'Angga Big Park',
+        'amount': widget.paymentAmount ?? '0',
+      },
 
-    //   {'id': 2, 'title': 'Top Up', 'amount': "0"},
+      {'id': 2, 'title': 'Top Up', 'amount': "0"},
     ];
     return Scaffold(
-      appBar: AppBar(title: Text("Wallet")),
+      appBar: AppBar(title: Text("Wallet"),
+      actions: [
+       
+      ],
+      
+      ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -126,7 +131,6 @@ class _WalletPageState extends State<WalletPage> {
                     child: ListView.builder(
                       itemCount: transactions.length,
                       itemBuilder: (context, index) {
-                        // final transaction = transactions![index];
 
                         return ListTile(
                           leading: CircleAvatar(
@@ -180,7 +184,9 @@ class _WalletPageState extends State<WalletPage> {
 
                               //   Text('${transactions[index]['date']}', style: greyStyle),
                               // ],)
+                          
                             ],
+                          
                           ),
                         );
                       },
