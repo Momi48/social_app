@@ -37,7 +37,7 @@ samples, guidance on mobile development, and a full API reference.
 <div class="image-grid">
   <img src="https://github.com/user-attachments/assets/b72ac1eb-d78c-4d9e-ba10-d13ef2d581c6" />
   <img src="https://github.com/user-attachments/assets/ca3961a0-b753-44cb-8ac5-6d9cce0f7a2a" />
-  <img width="316" height="629" alt="Screenshot 2025-08-22 122220" src="https://github.com/user-attachments/assets/15fb200a-53ed-4310-82b0-66227b7fc3e2" />
+  <img width="317" height="657" alt="11" src="https://github.com/user-attachments/assets/fd1bfd3e-010e-45b0-b0d4-863ea299ec99" />
   <img src="https://github.com/user-attachments/assets/e02b75d7-f95d-4105-beb9-384af94a04f0" />
   <img src="https://github.com/user-attachments/assets/eae709ee-3ba9-488d-8995-73c1b2316e89" />
 </div>
