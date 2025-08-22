@@ -1,18 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:social_app/global/global_variablles.dart';
 import 'package:social_app/pages/payment/orders_services.dart';
+import 'package:social_app/provider/payment_provider.dart';
 import 'package:social_app/widgets/no_transaction.dart';
+import 'package:uuid/uuid.dart';
 
-// ignore: must_be_immutable
 class WalletPage extends StatefulWidget {
-  String? paymentAmount;
-  final String? paymentid;
-  WalletPage({super.key, this.paymentAmount, this.paymentid});
+  const WalletPage({super.key});
 
   @override
   State<WalletPage> createState() => _WalletPageState();
@@ -20,31 +16,20 @@ class WalletPage extends StatefulWidget {
 
 class _WalletPageState extends State<WalletPage> {
   final style = TextStyle(fontWeight: FontWeight.bold, fontSize: 25);
-
   final greyStyle = TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: 18,
     color: Colors.grey,
   );
-
+  
   @override
   Widget build(BuildContext context) {
-     List<Map<String, dynamic>> transactions = [
-      {
-        'id': 1,
-        'title': 'Angga Big Park',
-        'amount': widget.paymentAmount ?? '0',
-      },
-
-      {'id': 2, 'title': 'Top Up', 'amount': "0"},
-    ];
+    final walletProvider = Provider.of<PaymentProvider>(context);
+    final transactions = walletProvider.transactions;
+  final uuid = Uuid();
+String randomId = uuid.v4();
     return Scaffold(
-      appBar: AppBar(title: Text("Wallet"),
-      actions: [
-       
-      ],
-      
-      ),
+      appBar: AppBar(title: Text("Wallet"), actions: []),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -60,10 +45,9 @@ class _WalletPageState extends State<WalletPage> {
               padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: [
                   Text(
-                    "\$${widget.paymentAmount ?? '0'}",
+                    "\$${transactions.isNotEmpty ? transactions[0]['amount'] : '0'}",
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
@@ -84,7 +68,7 @@ class _WalletPageState extends State<WalletPage> {
                           ),
                           SizedBox(height: 5),
                           Text(
-                            "2208 1996 4900",
+                            randomId,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.white70,
@@ -131,7 +115,6 @@ class _WalletPageState extends State<WalletPage> {
                     child: ListView.builder(
                       itemCount: transactions.length,
                       itemBuilder: (context, index) {
-
                         return ListTile(
                           leading: CircleAvatar(
                             backgroundColor: containerColor,
@@ -145,21 +128,14 @@ class _WalletPageState extends State<WalletPage> {
                           ),
                           trailing: IconButton(
                             onPressed: () {
-                              refundPayment(
-                                widget.paymentid.toString(),
-                                widget.paymentAmount.toString(),
-                              );
-                              print(
-                                'Here in result is ${widget.paymentid} ${widget.paymentAmount}',
-                              );
-                              setState(() {});
+                              walletProvider.refundPayment();
                             },
                             icon: Icon(Icons.back_hand),
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(transactions[index]['title'], style: style),
+                              Text(transactions[index]['title'].toString(), style: style),
                               Row(
                                 children: [
                                   Transform.translate(
@@ -175,24 +151,12 @@ class _WalletPageState extends State<WalletPage> {
                                   ),
                                 ],
                               ),
-                              //   SizedBox(height: 2),
-                              // Row(children: [
-                              //    Transform.translate(
-                              //         offset: const Offset(-2, 0),
-                              //         child:  Icon(Icons.lock_clock, size: 20),
-                              //       ),
-
-                              //   Text('${transactions[index]['date']}', style: greyStyle),
-                              // ],)
-                          
                             ],
-                          
                           ),
                         );
                       },
                     ),
                   )
-                // No Transaction Section
                 : Column(
                     children: [
                       Image.asset(
@@ -200,7 +164,6 @@ class _WalletPageState extends State<WalletPage> {
                         width: 180,
                         height: 170,
                       ),
-
                       Text(
                         "No Transaction",
                         textAlign: TextAlign.center,
@@ -224,12 +187,8 @@ class _WalletPageState extends State<WalletPage> {
                       SizedBox(height: 10),
                       NoTransaction(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OrdersPage(),
-                            ),
-                          );
+                          final navigationProvider = Provider.of<PaymentProvider>(context, listen: false);
+    navigationProvider.setCurrentIndex(1);
                         },
                       ),
                     ],
@@ -238,47 +197,5 @@ class _WalletPageState extends State<WalletPage> {
         ),
       ),
     );
-  }
-
-  Future<Map<String, dynamic>> refundPayment(
-    String paymentid,
-    String paymentAmount,
-  ) async {
-    try {
-      // 1. Prepare Stripe API request
-      final response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/refunds'),
-        headers: {
-          'Authorization': 'Bearer ${dotenv.env['STRIPE_SECRET_KEY']}',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: {'payment_intent': paymentid, 'amount': paymentAmount},
-      );
-
-      final responseData = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        setState(() {
-          widget.paymentAmount = '0'; // Reset to zero
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Refunded Amount ${widget.paymentAmount} Successfully ',
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-        return {
-          'success': true,
-          'refundId': responseData['id'],
-          'status': responseData['status'],
-        };
-      } else {
-        throw Exception(responseData['error']['message'] ?? 'Refund failed');
-      }
-    } catch (e) {
-      throw Exception('Refund error: $e');
-    }
   }
 }

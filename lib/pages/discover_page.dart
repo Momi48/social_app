@@ -16,7 +16,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
   }
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     AdHelper.dispose();
   }
@@ -53,7 +52,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Center(
-                child: Text('Hello') //AdHelper.showbannerAd()
+                child:  AdHelper.showBannerAd() 
               ),
             ),
           ),
