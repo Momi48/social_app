@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:social_app/global/global_variablles.dart';
-import 'package:social_app/pages/payment/orders_services.dart';
 import 'package:social_app/provider/payment_provider.dart';
 import 'package:social_app/widgets/no_transaction.dart';
 import 'package:uuid/uuid.dart';
@@ -27,7 +26,7 @@ class _WalletPageState extends State<WalletPage> {
     final walletProvider = Provider.of<PaymentProvider>(context);
     final transactions = walletProvider.transactions;
   final uuid = Uuid();
-String randomId = uuid.v4();
+String randomId = uuid.v4().substring(0, 12);
     return Scaffold(
       appBar: AppBar(title: Text("Wallet"), actions: []),
       body: Padding(

@@ -185,7 +185,7 @@ class PaymentProvider with ChangeNotifier {
       final status = data['status'];
       final amount = data['amount'];
       final method = data['payment_method'];
-      paymentIntentID = data['id']; // ✅ keep provider’s ID in sync
+      paymentIntentID = data['id'];
 
       if (response.statusCode == 200 && method == null) {
         _errorLogs = {

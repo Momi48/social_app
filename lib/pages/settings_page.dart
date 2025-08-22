@@ -67,22 +67,31 @@ class _SettingsPageState extends State<SettingsPage> {
   Consumer<PaymentProvider>(
     builder: (context, paymentProvider, child) {
       final logs = paymentProvider.errorLogs;
-
-      if (logs == null) {
+        
+          
+      if (logs != null && logs['status'] != 'requires_payment_method') {
         return const Padding(
           padding: EdgeInsets.all(16.0),
-          child: CircularProgressIndicator(),
+          child: Text('No Error Found')
         );
-      }
 
+      }
+     else if(logs == null){
+       return const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text('Updated Failed Payment Will be Shown Here')
+        );
+     }   
+     
+     print("logs is $logs");
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Payment Failed Status: ${logs['status']}"),
+            Text("Payment Failed Status: ${logs!['status']}"),
             SizedBox(height: 8),
-            Text("failed to send ${logs['amount'] / 100}  "),
+            Text("Failed to send ${logs['amount'] / 100}  "),
             SizedBox(height: 8),
             Text("Error Log Message: ${logs['message']}"),
           ],
