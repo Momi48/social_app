@@ -28,6 +28,7 @@ samples, guidance on mobile development, and a full API reference.
     justify-items: center;
 
   }
+
   .image-grid img {
     width: 200px;
     border-radius: 8px; /* optional: rounded corners */
@@ -40,6 +41,7 @@ samples, guidance on mobile development, and a full API reference.
   <img width="317" height="657" alt="11" src="https://github.com/user-attachments/assets/fd1bfd3e-010e-45b0-b0d4-863ea299ec99" />
   <img src="https://github.com/user-attachments/assets/e02b75d7-f95d-4105-beb9-384af94a04f0" />
   <img src="https://github.com/user-attachments/assets/eae709ee-3ba9-488d-8995-73c1b2316e89" />
+ <img width="318" height="657" alt="24" src="https://github.com/user-attachments/assets/da50f3e2-8674-4bdc-b677-be91b572bf6d" />
 </div>
 
 
